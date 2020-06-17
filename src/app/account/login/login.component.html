@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-7">
+      <h3 class="signintext">Sign In.</h3>
+      <mat-horizontal-stepper [linear]="true" #stepper>
+        <mat-step [stepControl]="otpForm">
+          <form [formGroup]="otpForm" (submit)="sendOTP(stepper)">
+            <ng-template matStepLabel>Phone</ng-template>
+            <mat-form-field>
+              <mat-label>Country code</mat-label>
+              <mat-select formControlName="countryCode">
+                <mat-option *ngFor="let code of countryCodes" [value]="code">
+                  {{code}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Phone</mat-label>
+              <input matInput formControlName="phone" placeholder="9782970790" required>
+              <mat-error>Phone lenght must be 10-13 digits long.</mat-error>
+            </mat-form-field>
+            <div>
+              <button mat-raised-button color="primary" type="submit"
+                [disabled]="Process.otp || otpForm.status=='INVALID'">
+                Generate OTP
+                <mat-spinner [diameter]="16" *ngIf="Process.otp"></mat-spinner>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="loginForm">
+          <form [formGroup]="loginForm" (submit)="login()">
+            <ng-template matStepLabel>One Time Password</ng-template>
+            <mat-form-field>
+              <mat-label>OTP</mat-label>
+              <input matInput formControlName="otp" placeholder="123456" required>
+            </mat-form-field>
+            <div>
+              <mat-icon class="icon_back" (click)="stepper.previous()">arrow_back_ios</mat-icon>
+              <button [disabled]="Process.login || otpForm.status=='INVALID'" mat-raised-button color="primary"
+                type="submit">
+                Login
+                <mat-spinner [diameter]="16" *ngIf="Process.login"></mat-spinner>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </div>
+    <div class="col-md-5">
+      <img src="assets/images/26233565.jpg" class="img-fluid" />
+    </div>
+  </div>
+</div>
+<div id="sign-in-button"></div>

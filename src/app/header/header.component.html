@@ -1,0 +1,32 @@
+<div class="container-fluid">
+  <div class="row">
+
+    <nav class="col-sm-12 navbar navbar-expand-lg navbar-dark bg-custom">
+      <a class="navbar-brand" href="#">
+        webRTC
+        <mat-icon>home</mat-icon>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" [routerLink]="['/']">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item" *ngIf="!userService.isLoggedIn">
+            <a class="nav-link" [routerLink]="['/account/login']">Login</a>
+          </li>
+          <li class="nav-item" *ngIf="userService.isLoggedIn">
+            <a class="nav-link" [routerLink]="['/dashboard/room']">Meeting Room</a>
+          </li>
+          <li class="nav-item" *ngIf="userService.isLoggedIn">
+            <a class="nav-link" (click)="logout()">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+  </div>
+</div>

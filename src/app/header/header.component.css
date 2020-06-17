@@ -1,0 +1,14 @@
+.bg-custom {
+  background-color: #673ab7;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, .3);
+  color: #fff;
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+.navbar-brand {
+  font-size: 30px;
+  ;
+}

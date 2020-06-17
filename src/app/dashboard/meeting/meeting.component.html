@@ -1,0 +1,26 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12" id="leftbar">
+      <div id="screen">
+        <div id="demoscreen" *ngIf="!hasJoined">
+          <div class="text">
+            <p>
+              Join the call..
+            </p>
+          </div>
+        </div>
+        <div id="videos" #videos>
+
+        </div>
+        <div class="button_bar">
+          <button mat-fab color="primary" (click)="Join()" *ngIf="!hasJoined">
+            <mat-icon>phone</mat-icon>
+          </button>
+          <button mat-fab color="primary" (click)="Stop()" *ngIf="hasJoined">
+            <mat-icon>phone_disabled</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

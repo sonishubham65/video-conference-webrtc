@@ -1,0 +1,54 @@
+#screen {
+  min-height: 500px;
+  position: relative;
+  background: #333;
+  float: left;
+  width: 100%;
+}
+
+#screen #demoscreen {
+  position: absolute;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  background: #333;
+  display: table;
+}
+
+#screen #demoscreen .text {
+  font-size: 30px;
+  text-align: center;
+  color: white;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#screen #videos {
+  width: 100%;
+  height: 100%;
+}
+
+#screen #videos video {
+  width: 33%;
+  height: 100%;
+  float: left;
+  margin: 0;
+  border: dashed 1px #ffffff;
+  transform: rotateY(180deg)
+}
+
+@media screen and (max-width:360px) {
+  #screen #videos video {
+    width: 100%;
+  }
+
+}
+
+#screen .button_bar {
+  position: absolute;
+  bottom: 0;
+  z-index: 2;
+  text-align: center;
+  width: 100%;
+  padding: 15px;
+}
