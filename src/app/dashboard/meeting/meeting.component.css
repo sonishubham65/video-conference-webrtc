@@ -29,19 +29,18 @@
 }
 
 #screen #videos video {
-  width: 33%;
+  width: 50%;
   height: 100%;
   float: left;
   margin: 0;
   border: dashed 1px #ffffff;
-  transform: rotateY(180deg)
+  transform: rotateY(180deg);
 }
 
-@media screen and (max-width:360px) {
+@media screen and (max-width: 360px) {
   #screen #videos video {
     width: 100%;
   }
-
 }
 
 #screen .button_bar {
