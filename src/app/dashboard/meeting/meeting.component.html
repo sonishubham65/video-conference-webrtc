@@ -10,7 +10,14 @@
           </div>
         </div>
         <div id="videos" #videos>
-
+          <div *ngIf="screenService.isStarted" id="youarepresenting">
+            <div class="text">You are presenting</div>
+            <div class="text">
+            <button mat-fab color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted">
+              <mat-icon>stop_screen_share</mat-icon>
+            </button>
+            </div>
+          </div>
         </div>
         <div class="button_bar">
           <button mat-fab color="primary" (click)="Join()" *ngIf="!hasJoined">

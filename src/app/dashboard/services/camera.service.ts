@@ -29,7 +29,7 @@ export class CameraService {
     });
     this.isStarted = false;
   }
-  element(stream?, volume?) {
+  element(userid, stream?, volume?) {
     let video = document.createElement("video");
     if (!stream) {
       video.volume = volume ? volume : 0;
@@ -39,7 +39,9 @@ export class CameraService {
 
     video.setAttribute("id", stream.id)
     video.setAttribute("autoplay", "true")
-    video.setAttribute("playsinline", "true")
+    video.setAttribute("controls", "true")
+    //video.setAttribute("playsinline", "true")
+    video.setAttribute("data-userid", userid)
     video.srcObject = stream;
     return video;
   }

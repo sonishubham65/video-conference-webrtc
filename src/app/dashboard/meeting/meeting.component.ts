@@ -27,7 +27,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private cameraService: CameraService,
-    private audioService: AudioService,
     public screenService: ScreenService,
     private firebaseService: FirebaseService,
     private rtcService: RtcService) {
@@ -58,10 +57,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
       let now = await this.firebaseService.now();
       this.hasJoined = true;
       await this.cameraService.start('Low');
-      //await this.audioService.start();
 
       //Create HTML
-      let element = this.cameraService.element();
+      let element = this.cameraService.element(this.userService.user.uid);
       this.videoElement.nativeElement.appendChild(element);
 
 
@@ -87,10 +85,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
             this.rtcService.addTrack(peerid, track, this.cameraService.Stream);
           });
 
-          //add audio track
-          // this.audioService.Stream.getTracks().forEach(async track => {
-          //   this.rtcService.addTrack(peerid, track, this.cameraService.Stream)
-          // });
 
           this.rtcService.onicecandidate(peerid).subscribe(event => {
             this.onicecandidate(event, peerid);
@@ -128,7 +122,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
           this.oniceconnectionstatechange(event, peerid, snapshot['streamid']);
         });
         this.rtcService.ontrack(peerid).subscribe(track => {
-          this.ontrack(track, peerid);
+          this.ontrack(track, peerid, userid);
         });
 
 
@@ -136,9 +130,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
           this.rtcService.addTrack(peerid, track, this.cameraService.Stream)
         });
 
-        // this.audioService.Stream.getTracks().forEach(async track => {
-        //   this.rtcService.addTrack(peerid, track, this.cameraService.Stream)
-        // });
 
         //create an answer
         let answer = await this.rtcService.createAnswer(peerid, JSON.parse(snapshot['description']));
@@ -166,7 +157,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
           this.oniceconnectionstatechange(event, peerid, streamid);
         });
         this.rtcService.ontrack(peerid).subscribe(event => {
-          this.ontrack(event, peerid);
+          this.ontrack(event, peerid, snapshot['from']);
         });
 
 
@@ -213,9 +204,13 @@ export class MeetingComponent implements OnInit, OnDestroy {
   async Share() {
     await this.screenService.start();
     let screenTrack = this.screenService.Stream.getVideoTracks()[0];
+    screenTrack.onended = () => {
+      this.Stop_share()
+    }
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, screenTrack)
     });
+    document.querySelector<HTMLElement>(`video[data-userid="${this.userService.user.uid}"]`).style.display = 'none'
   }
 
   async Stop_share() {
@@ -224,6 +219,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, cameraTrack)
     });
+    document.querySelector<HTMLElement>(`video[data-userid="${this.userService.user.uid}"]`).style.display = 'initial'
   }
 
   async Stop() {
@@ -248,9 +244,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     if (this.cameraService.isStarted)
       this.cameraService.stop();
 
-    //Stop audio stream
-    if (this.audioService.isStarted)
-      this.audioService.stop();
 
     //Stop screen stream
     if (this.screenService.isStarted)
@@ -308,7 +301,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.rtcService.Candidates[peerid].push(event.candidate);
     }
   }
-  ontrack(event, peerid) {
+  ontrack(event, peerid, userid) {
     console.log(`ontrack triggered..`, event);
 
     event.track.onmute = () => console.log("muted");
@@ -318,7 +311,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     console.log(stream.getTracks())
     if (!document.getElementById(stream.id)) {
       console.log("Inserted stream");
-      let element = this.cameraService.element(stream, 1);
+      let element = this.cameraService.element(userid, stream, 1);
       this.videoElement.nativeElement.appendChild(element);
       //this.setClass();
     }
