@@ -34,7 +34,6 @@
   float: left;
   margin: 0;
   border: dashed 1px #ffffff;
-  transform: rotateY(180deg);
 }
 
 @media screen and (max-width: 360px) {

@@ -19,6 +19,13 @@
           <button mat-fab color="primary" (click)="Stop()" *ngIf="hasJoined">
             <mat-icon>phone_disabled</mat-icon>
           </button>
+
+          <button mat-fab color="primary" (click)="Share()" *ngIf="hasJoined && !screenService.isStarted">
+            <mat-icon>screen_share</mat-icon>
+          </button>
+          <button mat-fab color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted">
+            <mat-icon>stop_screen_share</mat-icon>
+          </button>
         </div>
       </div>
     </div>

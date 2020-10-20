@@ -4,7 +4,7 @@ const Config = {
     video: {
       cursor: "always",
     },
-    audio: true
+    audio: false
   }
 }
 @Injectable({
@@ -19,6 +19,9 @@ export class ScreenService {
     this.isStarted = true;
   }
   stop() {
-
+    this.isStarted = false;
+    this.Stream.getTracks().forEach(function (track) {
+      track.stop();
+    });
   }
 }

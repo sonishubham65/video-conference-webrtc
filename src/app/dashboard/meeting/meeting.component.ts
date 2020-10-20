@@ -5,6 +5,7 @@ import { UserService } from 'src/app/services/user.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ScreenService } from '../services/screen.service';
 import { CameraService } from '../services/camera.service';
+import { AudioService } from '../services/audio.service';
 import { FirebaseService } from '../services/firebase.service';
 import { RtcService } from '../services/rtc.service';
 
@@ -18,7 +19,18 @@ import { RtcService } from '../services/rtc.service';
 export class MeetingComponent implements OnInit, OnDestroy {
   roomid;
   shareurl;
-  constructor(private titleService: Title, private snackBar: MatSnackBar, private userService: UserService, private router: Router, private route: ActivatedRoute, private sanitizer: DomSanitizer, private cameraService: CameraService, private screenService: ScreenService, private firebaseService: FirebaseService, private rtcService: RtcService) {
+  constructor(
+    private titleService: Title,
+    private snackBar: MatSnackBar,
+    private userService: UserService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private sanitizer: DomSanitizer,
+    private cameraService: CameraService,
+    private audioService: AudioService,
+    public screenService: ScreenService,
+    private firebaseService: FirebaseService,
+    private rtcService: RtcService) {
 
     titleService.setTitle("Join the Meeting | webRTC by Shubham Soni, Nagarro Jaipur");
     this.roomid = this.route.params['value'].roomid
@@ -43,17 +55,19 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
   async Join() {
     try {
+      let now = await this.firebaseService.now();
       this.hasJoined = true;
       await this.cameraService.start('Low');
+      //await this.audioService.start();
 
       //Create HTML
       let element = this.cameraService.element();
       this.videoElement.nativeElement.appendChild(element);
 
-      let now = new Date().getTime();
+
 
       // Join the room with roomid.
-      this.firebaseService.join(this.roomid, now).then(() => {
+      this.firebaseService.join(this.roomid, now).then((data) => {
         this.snackBar.open("You have joined the meeting successfully.", "close", {
           duration: 600
         });
@@ -64,14 +78,19 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
         let userid = snapshot['id'];
         if (userid != this.userService.user.uid) {
-          console.log(`Offer is Subscribed..`, snapshot);
+          console.log(`Offer is Subscribed.`);
           let peerid = await this.rtcService.create(userid, 'camera');
 
           //add camera track
-          this.cameraService.Stream.getTracks().forEach(async track => {
-            this.rtcService.addTrack(peerid, track, this.cameraService.Stream)
+          (this.screenService.Stream || this.cameraService.Stream).getTracks().forEach(async track => {
+            console.log(`track.muted ${track.muted}`)
+            this.rtcService.addTrack(peerid, track, this.cameraService.Stream);
           });
 
+          //add audio track
+          // this.audioService.Stream.getTracks().forEach(async track => {
+          //   this.rtcService.addTrack(peerid, track, this.cameraService.Stream)
+          // });
 
           this.rtcService.onicecandidate(peerid).subscribe(event => {
             this.onicecandidate(event, peerid);
@@ -81,6 +100,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
           //Send offer to connected remote peers
           this.firebaseService.share.offer({
+            created: await this.firebaseService.now(),
             roomid: this.roomid,
             peerid: peerid,
             userid: userid,
@@ -92,7 +112,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
       // Starts the listeners for offer
       this.subscriptions.offer = this.firebaseService.offer(this.roomid, now).subscribe(async snapshot => {
-        console.log(`Offer is Subscribed..`, snapshot);
+        console.log(`Offer is Subscribed.`);
         let peerid = snapshot['peerid'];
         let userid = snapshot['from'];
 
@@ -107,23 +127,25 @@ export class MeetingComponent implements OnInit, OnDestroy {
         this.rtcService.oniceconnectionstatechange(peerid).subscribe(event => {
           this.oniceconnectionstatechange(event, peerid, snapshot['streamid']);
         });
-        this.rtcService.ontrack(peerid).subscribe(event => {
-          this.ontrack(event, peerid);
+        this.rtcService.ontrack(peerid).subscribe(track => {
+          this.ontrack(track, peerid);
         });
 
 
-        this.cameraService.Stream.getTracks().forEach(async track => {
+        (this.screenService.Stream || this.cameraService.Stream).getTracks().forEach(async track => {
           this.rtcService.addTrack(peerid, track, this.cameraService.Stream)
         });
 
-
-
+        // this.audioService.Stream.getTracks().forEach(async track => {
+        //   this.rtcService.addTrack(peerid, track, this.cameraService.Stream)
+        // });
 
         //create an answer
         let answer = await this.rtcService.createAnswer(peerid, JSON.parse(snapshot['description']));
 
         //send answer to user who offered.
         this.firebaseService.share.answer({
+          created: await this.firebaseService.now(),
           roomid: this.roomid,
           peerid: peerid,
           userid: snapshot['from'],
@@ -132,11 +154,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
         });
       })
 
-
-
       // Starts the listeners for answer
-      this.subscriptions.answer = this.firebaseService.answer(this.roomid, now).subscribe(snapshot => {
-        console.log(`Answer is Subscribed..`, snapshot);
+      this.subscriptions.answer = this.firebaseService.answer(this.roomid, now).subscribe(async snapshot => {
+        console.log(`Answer is Subscribed..`);
 
         let peerid = snapshot['peerid'];
         let streamid = snapshot['streamid'];
@@ -154,9 +174,11 @@ export class MeetingComponent implements OnInit, OnDestroy {
         this.rtcService.setRemoteDescription(peerid, JSON.parse(snapshot['description']));
 
         //Share candidates
+        console.log('candidates lenght', this.rtcService.Candidates[peerid].length)
         this.firebaseService.share.candidate({
           roomid: this.roomid,
           peerid: peerid,
+          created: await this.firebaseService.now(),
           userid: snapshot['from'],
           candidates: this.rtcService.Candidates[peerid] ? this.rtcService.Candidates[peerid] : null,
           first: true
@@ -164,14 +186,18 @@ export class MeetingComponent implements OnInit, OnDestroy {
       })
 
       // Starts the listeners for candidate
-      this.subscriptions.candidate = this.firebaseService.candidate(this.roomid, now).subscribe(snapshot => {
-        console.log(`Candidate is Subscribed..`, snapshot);
+      this.subscriptions.candidate = this.firebaseService.candidate(this.roomid, now).subscribe(async snapshot => {
+        console.log(`Candidate is Subscribed..`);
 
         let peerid = snapshot['peerid'];
+
         this.rtcService.addIceCandidate(peerid, JSON.parse(snapshot['candidates']));
+
+        console.log('candidates lenght', this.rtcService.Candidates[peerid].length)
         if (snapshot['first']) {
           this.firebaseService.share.candidate({
             roomid: this.roomid,
+            created: await this.firebaseService.now(),
             peerid: peerid,
             userid: snapshot['from'],
             candidates: this.rtcService.Candidates[peerid] ? this.rtcService.Candidates[peerid] : null,
@@ -182,6 +208,22 @@ export class MeetingComponent implements OnInit, OnDestroy {
     } catch (e) {
       console.log(e)
     }
+  }
+
+  async Share() {
+    await this.screenService.start();
+    let screenTrack = this.screenService.Stream.getVideoTracks()[0];
+    Object.keys(this.rtcService.Peers).forEach(peerid => {
+      this.rtcService.replaceTrack(peerid, screenTrack)
+    });
+  }
+
+  async Stop_share() {
+    await this.screenService.stop();
+    let cameraTrack = this.cameraService.Stream.getVideoTracks()[0];
+    Object.keys(this.rtcService.Peers).forEach(peerid => {
+      this.rtcService.replaceTrack(peerid, cameraTrack)
+    });
   }
 
   async Stop() {
@@ -201,7 +243,19 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.videoElement.nativeElement.querySelectorAll('video').forEach(ele => {
       ele.remove();
     })
-    this.cameraService.stop();
+
+    //Stop camera stream
+    if (this.cameraService.isStarted)
+      this.cameraService.stop();
+
+    //Stop audio stream
+    if (this.audioService.isStarted)
+      this.audioService.stop();
+
+    //Stop screen stream
+    if (this.screenService.isStarted)
+      this.screenService.stop();
+
     this.rtcService.close();
   }
 
@@ -231,9 +285,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
   };
 
   oniceconnectionstatechange(event, peerid, streamid) {
-    console.log(`Oniceconnectionstatechange triggered..for unique id=${peerid}, streamid=${streamid}`);
+    console.log(`Oniceconnectionstatechange triggered..`, event);
     if (event.currentTarget.iceConnectionState == 'disconnected') {
-      console.log("Disconnected..");
+      console.log("Disconnected..", event);
       if (document.getElementById(streamid)) {
         document.getElementById(streamid).remove();
         //this.setClass();
@@ -245,18 +299,25 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
   }
   onicecandidate(event, peerid) {
-    console.log(`Onicecandidate triggered..for unique id=${peerid}`);
+    console.log(`Onicecandidate triggered..`);
     if (event.candidate) {
       if (!this.rtcService.Candidates[peerid]) {
         this.rtcService.Candidates[peerid] = [];
       }
+      console.log("Adding Candidate")
       this.rtcService.Candidates[peerid].push(event.candidate);
     }
   }
   ontrack(event, peerid) {
-    console.log(`ontrack triggered..for unique id=${peerid} `);
+    console.log(`ontrack triggered..`, event);
+
+    event.track.onmute = () => console.log("muted");
+    event.track.onunmute = () => console.log("unmuted");
+
     let stream = event.streams[0];
+    console.log(stream.getTracks())
     if (!document.getElementById(stream.id)) {
+      console.log("Inserted stream");
       let element = this.cameraService.element(stream, 1);
       this.videoElement.nativeElement.appendChild(element);
       //this.setClass();

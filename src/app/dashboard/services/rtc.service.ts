@@ -43,7 +43,7 @@ export class RtcService {
    */
   onicecandidate(peerid) {
     return new Observable(observer => {
-      console.log("onicecandidateby ", peerid)
+      //console.log("onicecandidateby ", peerid)
       this.Peers[peerid].onicecandidate = async (event) => {
         observer.next(event)
       }
@@ -81,7 +81,7 @@ export class RtcService {
    * @description This function add a new track to RTCPeerConnection
    */
   async addTrack(peerid, track, stream) {
-    console.log(`Track is being added.. for peer id=${peerid}, track=${track}, stream=${stream}`)
+    console.log(`Track is being added..`, track)
     let trackid = await this.Peers[peerid].addTrack(track, stream);
     if (!this.Connections[peerid].tracks) {
       this.Connections[peerid].tracks = [];
@@ -100,10 +100,12 @@ export class RtcService {
   }
 
   async replaceTrack(peerid, track) {
-    let tracks = this.Connections[peerid].tracks;
-    if (tracks) {
-      await this.Peers[peerid].replaceTrack(track);
-    }
+    //console.log(this.Connections[peerid], peerid);
+    var sender = this.Connections[peerid].tracks.find(function (s) {
+      return s.track.kind == track.kind;
+    });
+    //console.log('found sender:', sender);
+    sender.replaceTrack(track);
   }
 
 
@@ -113,7 +115,7 @@ export class RtcService {
    * @description This function Creates a new offer and set it as local description.
    */
   async createOffer(peerid) {
-    let offer = await this.Peers[peerid].createOffer();
+    let offer = await this.Peers[peerid].createOffer({ iceRestart: true });
     await this.setLocalDescription(peerid, offer);
     return offer;
   }
@@ -137,7 +139,7 @@ export class RtcService {
    * @description This function sets the local description
    */
   async setLocalDescription(peerid, description) {
-    console.log("peerid", peerid)
+    //console.log("peerid", peerid)
     await this.Peers[peerid].setLocalDescription(description);
   }
 

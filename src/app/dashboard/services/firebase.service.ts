@@ -16,6 +16,11 @@ export class FirebaseService {
    * @param roomid
    * @description This function adds the user id to room.users collection
    */
+  async now() {
+    const time = await firebase.firestore.Timestamp.now().seconds;
+    console.log(`time`, time)
+    return time;
+  }
   async join(roomid, now) {
     await firebase.firestore().collection("rooms").doc(roomid).collection("users").add({
       id: this.userService.user.uid,
@@ -121,42 +126,43 @@ export class FirebaseService {
 
   share = {
     offer: (_args) => {
-      const { roomid, peerid, userid, offer, streamid } = _args;
+      const { roomid, peerid, userid, offer, streamid, created } = _args;
       let set = {
         description: JSON.stringify(offer),
         from: this.userService.user.uid,
         to: userid,
         peerid: peerid,
         streamid: streamid,
-        created: new Date().getTime(),
+        created: created,
       };
-      console.log(`Create an offer for roomid=${roomid} peerid = ${peerid} and userid=${userid}`, set);
+      console.log(`Create an offer for userid=${userid}`);
       firebase.firestore().collection("rooms").doc(roomid).collection(`offers-${userid}`).doc().set(set);
     },
     answer: (_args) => {
-      const { roomid, peerid, userid, answer, streamid } = _args;
+      const { roomid, peerid, userid, answer, streamid, created } = _args;
       let set = {
+        created: created,
         description: JSON.stringify(answer),
         from: this.userService.user.uid,
         to: userid,
         peerid: peerid,
-        created: new Date().getTime(),
         streamid: streamid,
       };
-      console.log(`Create an answer for roomid=${roomid} peerid = ${peerid} and userid=${userid}`, set);
+      console.log(`Create an answer for userid=${userid}`);
       firebase.firestore().collection("rooms").doc(roomid).collection(`answers-${userid}`).doc().set(set);
     },
     candidate: (_args) => {
-      const { roomid, peerid, userid, candidates, first } = _args;
+      const { roomid, peerid, userid, candidates, first, created } = _args;
+      console.log(candidates)
       let set = {
         candidates: JSON.stringify(candidates),
         from: this.userService.user.uid,
         to: userid,
         peerid: peerid,
-        created: new Date().getTime(),
+        created: created,
         first: first
       };
-      console.log(`Create candidate for roomid=${roomid} peerid = ${peerid} and userid=${userid}`, set);
+      console.log(`Create candidate for userid=${userid}`);
       firebase.firestore().collection("rooms").doc(roomid).collection(`candidates-${userid}`).doc().set(set);
     },
   }
