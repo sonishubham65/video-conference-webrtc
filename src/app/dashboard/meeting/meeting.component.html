@@ -10,7 +10,7 @@
           </div>
         </div>
         <div id="videos" #videos>
-          <div *ngIf="screenService.isStarted" id="youarepresenting">
+          <div [hidden]="!screenService.isStarted" class="sizer" id="youarepresenting">
             <div class="text">You are presenting</div>
             <div class="text">
             <button mat-fab color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted">

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 const Config = {
   constraints: {
     HD: {
-      video: { width: 1280, height: 720 },
+      video: { width: 1440, height: 824 },
       audio: true
     },
     Low: {
@@ -39,7 +39,8 @@ export class CameraService {
 
     video.setAttribute("id", stream.id)
     video.setAttribute("autoplay", "true")
-    video.setAttribute("controls", "true")
+    video.setAttribute("controls", "false")
+    video.setAttribute("class", "sizer")
     //video.setAttribute("playsinline", "true")
     video.setAttribute("data-userid", userid)
     video.srcObject = stream;

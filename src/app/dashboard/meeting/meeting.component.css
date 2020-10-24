@@ -26,13 +26,28 @@
 #screen #videos {
   width: 100%;
   height: 100%;
-  display: flex;
+  display: table;
 }
 
 #screen #videos video {
   margin: 0;
-  border: dashed 1px #ffffff;
-  max-width: 200px;
+  width: 100%;
+  max-height: 630px;
+  float: left;
+  padding: 1px;
+}
+#screen #videos .one {
+  width: 100%;
+  min-height: 620px;
+}
+#screen #videos .two {
+  width: 50%;
+}
+#screen #videos .three {
+  width: 33.33%;
+}
+#screen #videos .four {
+  width: 25%;
 }
 
 @media screen and (max-width: 360px) {
@@ -52,14 +67,16 @@
 
 #youarepresenting {
   color: white;
-  border: dashed 1px #ccc;
   width: 200px;
-  min-height: 150px;
-  display: flex;
-  vertical-align: middle;
+
   justify-content: space-between !important;
   align-items: center;
   text-align: center;
+
+  display: flex;
+  float: left;
+  vertical-align: middle;
+  height: 100%;
 }
 #youarepresenting .text {
   width: 100%;

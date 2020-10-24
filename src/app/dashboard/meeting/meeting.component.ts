@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, ɵCompiler_compileModuleSync__POST_R3__ } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, ɵCompiler_compileModuleSync__POST_R3__, Inject } from '@angular/core';
 import { Title, DomSanitizer } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from 'src/app/services/user.service';
@@ -8,7 +8,6 @@ import { CameraService } from '../services/camera.service';
 import { AudioService } from '../services/audio.service';
 import { FirebaseService } from '../services/firebase.service';
 import { RtcService } from '../services/rtc.service';
-
 
 @Component({
   selector: 'app-meeting',
@@ -56,7 +55,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     try {
       let now = await this.firebaseService.now();
       this.hasJoined = true;
-      await this.cameraService.start('Low');
+      await this.cameraService.start('HD');
 
       //Create HTML
       let element = this.cameraService.element(this.userService.user.uid);
@@ -210,7 +209,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, screenTrack)
     });
-    document.querySelector<HTMLElement>(`video[data-userid="${this.userService.user.uid}"]`).style.display = 'none'
+    document.querySelector<HTMLElement>(`video[data-userid="${this.userService.user.uid}"]`).setAttribute('hidden', '')
+    this.adjustSize()
+
   }
 
   async Stop_share() {
@@ -219,7 +220,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, cameraTrack)
     });
-    document.querySelector<HTMLElement>(`video[data-userid="${this.userService.user.uid}"]`).style.display = 'initial'
+    document.querySelector<HTMLElement>(`video[data-userid="${this.userService.user.uid}"]`).removeAttribute('hidden')
+    this.adjustSize()
   }
 
   async Stop() {
@@ -283,6 +285,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       console.log("Disconnected..", event);
       if (document.getElementById(streamid)) {
         document.getElementById(streamid).remove();
+        this.adjustSize();
         //this.setClass();
       } else {
         console.log("Not found");
@@ -314,6 +317,25 @@ export class MeetingComponent implements OnInit, OnDestroy {
       let element = this.cameraService.element(userid, stream, 1);
       this.videoElement.nativeElement.appendChild(element);
       //this.setClass();
+      this.adjustSize();
     }
+  }
+
+  adjustSize() {
+    setTimeout(() => {
+      let len = document.getElementById("videos").querySelectorAll(".sizer:not([hidden])").length;
+      console.log("`````````````````````````", len, document.getElementById("videos").querySelectorAll(".sizer:not([hidden])"))
+      document.getElementById("videos").querySelectorAll(".sizer:not([hidden])").forEach(element => {
+        console.log(element)
+        if (len > 1) {
+          element.classList.remove("one")
+          element.classList.add("two")
+        } else {
+          element.classList.remove("two")
+          element.classList.add("one")
+        }
+      })
+    }, 100);
+
   }
 }
