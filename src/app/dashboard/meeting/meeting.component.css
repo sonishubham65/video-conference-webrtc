@@ -1,5 +1,5 @@
 #screen {
-  min-height: 500px;
+  min-height: 630px;
   position: relative;
   background: #333;
   width: 100%;
@@ -32,17 +32,16 @@
 #screen #videos {
   width: 100%;
   text-align: center;
-  display: flex;
-  justify-content: space-evenly;
-  vertical-align: middle;
-  align-items: center;
 }
 
 #screen #videos div {
   margin: 0;
   width: 50%;
   padding: 1px;
-  display: flex;
+  display: inline-block;
+}
+#screen #videos div:nth-child(even) {
+  content: "";
 }
 #screen #videos video {
   width: 100%;
@@ -71,5 +70,5 @@
 #screen .mat-flat-button.mat-primary,
 #screen .mat-mini-fab.mat-primary,
 #screen .mat-raised-button.mat-primary {
-  background-color: #2a82be;
+  background-color: #426ec2;
 }

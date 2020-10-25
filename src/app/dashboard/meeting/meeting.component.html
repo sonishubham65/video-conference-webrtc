@@ -26,6 +26,23 @@
             <mat-icon>phone_disabled</mat-icon>
           </button>
 
+          <button mat-fab color="primary" (click)="micState(true)" *ngIf="hasJoined && !mic">
+            <mat-icon>mic_off</mat-icon>
+          </button>
+
+          <button mat-fab color="primary" (click)="micState(false)" *ngIf="hasJoined && mic">
+            <mat-icon>mic</mat-icon>
+          </button>
+
+
+          <button mat-fab color="primary" (click)="videoState(true)" *ngIf="hasJoined && !video">
+            <mat-icon>videocam_off</mat-icon>
+          </button>
+          
+          <button mat-fab color="primary" (click)="videoState(false)" *ngIf="hasJoined && video">
+            <mat-icon>videocam</mat-icon>
+          </button>
+
           <button mat-fab color="primary" (click)="Share()" *ngIf="hasJoined && !screenService.isStarted">
             <mat-icon>screen_share</mat-icon>
           </button>

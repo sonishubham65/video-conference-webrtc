@@ -41,7 +41,7 @@ export class CameraService {
     div.setAttribute("data-userid", userid)
 
     video.setAttribute("autoplay", "true")
-    video.setAttribute("controls", "false")
+    //video.setAttribute("controls", "false")
     video.setAttribute("class", "sizer")
 
     video.srcObject = stream;
