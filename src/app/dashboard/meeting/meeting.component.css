@@ -2,8 +2,14 @@
   min-height: 500px;
   position: relative;
   background: #333;
-  float: left;
   width: 100%;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  vertical-align: middle;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 /***/
 #screen #demoscreen {
@@ -25,29 +31,21 @@
 
 #screen #videos {
   width: 100%;
-  height: 100%;
-  display: table;
+  text-align: center;
+  display: flex;
+  justify-content: space-evenly;
+  vertical-align: middle;
+  align-items: center;
 }
 
-#screen #videos video {
+#screen #videos div {
   margin: 0;
-  width: 100%;
-  max-height: 630px;
-  float: left;
-  padding: 1px;
-}
-#screen #videos .one {
-  width: 100%;
-  min-height: 620px;
-}
-#screen #videos .two {
   width: 50%;
+  padding: 1px;
+  display: flex;
 }
-#screen #videos .three {
-  width: 33.33%;
-}
-#screen #videos .four {
-  width: 25%;
+#screen #videos video {
+  width: 100%;
 }
 
 @media screen and (max-width: 360px) {
@@ -65,19 +63,13 @@
   padding: 15px;
 }
 
-#youarepresenting {
-  color: white;
-  width: 200px;
-
-  justify-content: space-between !important;
-  align-items: center;
-  text-align: center;
-
-  display: flex;
-  float: left;
-  vertical-align: middle;
-  height: 100%;
+#screen .button_bar button {
+  margin: 2px;
 }
-#youarepresenting .text {
-  width: 100%;
+
+#screen .mat-fab.mat-primary,
+#screen .mat-flat-button.mat-primary,
+#screen .mat-mini-fab.mat-primary,
+#screen .mat-raised-button.mat-primary {
+  background-color: #2a82be;
 }

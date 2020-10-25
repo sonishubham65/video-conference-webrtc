@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   recaptchaVerifier;
   confirmationResult;
   constructor(private titleService: Title, private fb: FormBuilder, private snackBar: MatSnackBar, private userService: UserService, private router: Router) {
-    titleService.setTitle("Login | webRTC by Shubham Soni, Nagarro Jaipur");
+    titleService.setTitle("Login | Realtime by Shubham Soni, MTX");
   }
   ngOnInit() {
     firebase.auth().useDeviceLanguage();

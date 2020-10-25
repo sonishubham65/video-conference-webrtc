@@ -14,7 +14,7 @@ export class RoomComponent implements OnInit {
   Process = { create: false, join: false };
   roomid: string;
   constructor(private titleService: Title, private snackBar: MatSnackBar, private userService: UserService, private router: Router, private route: ActivatedRoute) {
-    titleService.setTitle("Create a room | webRTC by Shubham Soni, Nagarro Jaipur");
+    titleService.setTitle("Create a room | Realtime by Shubham Soni, MTX");
     if (this.route.params['value'].roomid) {
       this.roomid = this.route.params['value'].roomid;
     }

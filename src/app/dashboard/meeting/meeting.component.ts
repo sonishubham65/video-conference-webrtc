@@ -5,7 +5,6 @@ import { UserService } from 'src/app/services/user.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ScreenService } from '../services/screen.service';
 import { CameraService } from '../services/camera.service';
-import { AudioService } from '../services/audio.service';
 import { FirebaseService } from '../services/firebase.service';
 import { RtcService } from '../services/rtc.service';
 
@@ -209,9 +208,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, screenTrack)
     });
-    document.querySelector<HTMLElement>(`video[data-userid="${this.userService.user.uid}"]`).setAttribute('hidden', '')
-    this.adjustSize()
-
   }
 
   async Stop_share() {
@@ -220,8 +216,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, cameraTrack)
     });
-    document.querySelector<HTMLElement>(`video[data-userid="${this.userService.user.uid}"]`).removeAttribute('hidden')
-    this.adjustSize()
   }
 
   async Stop() {
@@ -285,8 +279,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
       console.log("Disconnected..", event);
       if (document.getElementById(streamid)) {
         document.getElementById(streamid).remove();
-        this.adjustSize();
-        //this.setClass();
       } else {
         console.log("Not found");
       }
@@ -316,26 +308,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
       console.log("Inserted stream");
       let element = this.cameraService.element(userid, stream, 1);
       this.videoElement.nativeElement.appendChild(element);
-      //this.setClass();
-      this.adjustSize();
     }
-  }
-
-  adjustSize() {
-    setTimeout(() => {
-      let len = document.getElementById("videos").querySelectorAll(".sizer:not([hidden])").length;
-      console.log("`````````````````````````", len, document.getElementById("videos").querySelectorAll(".sizer:not([hidden])"))
-      document.getElementById("videos").querySelectorAll(".sizer:not([hidden])").forEach(element => {
-        console.log(element)
-        if (len > 1) {
-          element.classList.remove("one")
-          element.classList.add("two")
-        } else {
-          element.classList.remove("two")
-          element.classList.add("one")
-        }
-      })
-    }, 100);
-
   }
 }

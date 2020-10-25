@@ -1,6 +1,7 @@
 .bg-custom {
-  background-color: #673ab7;
-  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, .3);
+  background-color: #0079b3;
+  background-image: -webkit-linear-gradient(top, #428bca, #0079b3);
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.3);
   color: #fff;
 }
 
@@ -10,5 +11,4 @@
 
 .navbar-brand {
   font-size: 30px;
-  ;
 }

@@ -1,6 +1,11 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12" id="leftbar">
+      <div [hidden]="!screenService.isStarted" id="youarepresenting">
+        <p>You are presenting <button mat-raised-button color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted">
+          Stop
+        </button></p>
+      </div>
       <div id="screen">
         <div id="demoscreen" *ngIf="!hasJoined">
           <div class="text">
@@ -9,15 +14,9 @@
             </p>
           </div>
         </div>
+        
         <div id="videos" #videos>
-          <div [hidden]="!screenService.isStarted" class="sizer" id="youarepresenting">
-            <div class="text">You are presenting</div>
-            <div class="text">
-            <button mat-fab color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted">
-              <mat-icon>stop_screen_share</mat-icon>
-            </button>
-            </div>
-          </div>
+          
         </div>
         <div class="button_bar">
           <button mat-fab color="primary" (click)="Join()" *ngIf="!hasJoined">

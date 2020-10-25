@@ -13,7 +13,7 @@ import {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'webRTC | Shubham Soni, Nagarro Jaipur';
+  title = 'RealTime | Shubham Soni, MTX';
   loading = true;
   constructor(private router: Router) {
     this.router.events.subscribe((event: Event) => {

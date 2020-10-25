@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 const Config = {
   constraints: {
     HD: {
-      video: { width: 1440, height: 824 },
+      video: { width: 1440, height: 830 },
       audio: true
     },
     Low: {
@@ -30,20 +30,22 @@ export class CameraService {
     this.isStarted = false;
   }
   element(userid, stream?, volume?) {
+    let div = document.createElement("div");
+
     let video = document.createElement("video");
     if (!stream) {
       video.volume = volume ? volume : 0;
       stream = this.Stream;
     }
-    console.log(stream);
+    div.setAttribute("id", stream.id)
+    div.setAttribute("data-userid", userid)
 
-    video.setAttribute("id", stream.id)
     video.setAttribute("autoplay", "true")
     video.setAttribute("controls", "false")
     video.setAttribute("class", "sizer")
-    //video.setAttribute("playsinline", "true")
-    video.setAttribute("data-userid", userid)
+
     video.srcObject = stream;
-    return video;
+    div.appendChild(video)
+    return div;
   }
 }
