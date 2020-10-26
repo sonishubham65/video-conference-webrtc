@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 const Config = {
   constraints: {
     HD: {
-      video: { width: 1440, height: 830 },
+      video: { width: 553, height: 317 },
       audio: true
     },
     Low: {
