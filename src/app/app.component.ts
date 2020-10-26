@@ -13,7 +13,7 @@ import {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'RealTime | Shubham Soni, MTX';
+  title = 'Realtime | Shubham Soni, MTX';
   loading = true;
   constructor(private router: Router) {
     this.router.events.subscribe((event: Event) => {

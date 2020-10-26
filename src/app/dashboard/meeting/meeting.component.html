@@ -19,35 +19,39 @@
           
         </div>
         <div class="button_bar">
-          <button mat-fab color="primary" (click)="Join()" *ngIf="!hasJoined">
+          <button mat-fab color="primary" (click)="copy_share_link()" matTooltip="Share meeting url with other">
+            <mat-icon>share</mat-icon>
+          </button>
+          <button mat-fab color="primary" (click)="Join()" *ngIf="!hasJoined" matTooltip="Start the call">
             <mat-icon>phone</mat-icon>
           </button>
-          <button mat-fab color="primary" (click)="Stop()" *ngIf="hasJoined">
-            <mat-icon>phone_disabled</mat-icon>
-          </button>
 
-          <button mat-fab color="primary" (click)="micState(true)" *ngIf="hasJoined && !mic">
+          <button mat-fab color="primary" (click)="micState(true)" *ngIf="hasJoined && !mic" matTooltip="Turn on mic">
             <mat-icon>mic_off</mat-icon>
           </button>
 
-          <button mat-fab color="primary" (click)="micState(false)" *ngIf="hasJoined && mic">
+          <button mat-fab color="primary" (click)="micState(false)" *ngIf="hasJoined && mic" matTooltip="Turn off mic">
             <mat-icon>mic</mat-icon>
           </button>
 
 
-          <button mat-fab color="primary" (click)="videoState(true)" *ngIf="hasJoined && !video">
+          <button mat-fab color="primary" (click)="videoState(true)" *ngIf="hasJoined && !video" matTooltip="Turn on video">
             <mat-icon>videocam_off</mat-icon>
           </button>
           
-          <button mat-fab color="primary" (click)="videoState(false)" *ngIf="hasJoined && video">
+          <button mat-fab color="primary" (click)="videoState(false)" *ngIf="hasJoined && video" matTooltip="Turn off video">
             <mat-icon>videocam</mat-icon>
           </button>
 
-          <button mat-fab color="primary" (click)="Share()" *ngIf="hasJoined && !screenService.isStarted">
+          <button mat-fab color="primary" (click)="Share()" *ngIf="hasJoined && !screenService.isStarted"  matTooltip="Share your screen">
             <mat-icon>screen_share</mat-icon>
           </button>
-          <button mat-fab color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted">
+          <button mat-fab color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted" matTooltip="Stop screen share">
             <mat-icon>stop_screen_share</mat-icon>
+          </button>
+
+          <button mat-fab color="primary" (click)="Stop()" *ngIf="hasJoined" matTooltip="Stop the call">
+            <mat-icon>phone_disabled</mat-icon>
           </button>
         </div>
       </div>

@@ -33,15 +33,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
     titleService.setTitle("Join the Meeting | webRTC by Shubham Soni, Nagarro Jaipur");
     this.roomid = this.route.params['value'].roomid
-    this.shareurl;
-
-    let url;
-    if (this.detectPhone.any()) {
-      url = `whatsapp://send?text=https://opentok65.web.app/dashboard/meeting/${this.roomid}`;
-    } else {
-      url = `https://api.whatsapp.com/send?text=https://opentok65.web.app/dashboard/meeting/${this.roomid}`;
-    }
-    this.shareurl = this.sanitizer.bypassSecurityTrustUrl(url)
+    console.log(router)
+    this.shareurl = window.location.href;
   }
 
   @ViewChild('videos', { static: false }) videoElement: any;
@@ -341,5 +334,16 @@ export class MeetingComponent implements OnInit, OnDestroy {
     let videoTrack = this.cameraService.Stream.getVideoTracks()[0];
     console.log(videoTrack)
     videoTrack.enabled = state
+  }
+  copy_share_link() {
+    this.shareurl;
+    navigator.clipboard.writeText(this.shareurl).then(() => {
+      this.snackBar.open("Share url has been copied in your clipboard", "close", {
+        duration: 600
+      });
+    }, function (err) {
+      console.error('Async: Could not copy text: ', err);
+    });
+
   }
 }

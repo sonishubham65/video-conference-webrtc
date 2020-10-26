@@ -7,7 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-let modules = [MatSnackBarModule, MatListModule, MatInputModule, MatButtonModule, MatSelectModule, MatProgressSpinnerModule, MatIconModule, MatProgressBarModule]
+import { MatTooltipModule } from '@angular/material/tooltip';
+let modules = [MatSnackBarModule, MatListModule, MatInputModule, MatButtonModule, MatSelectModule, MatProgressSpinnerModule, MatIconModule, MatProgressBarModule, MatTooltipModule]
 @NgModule({
     imports: modules,
     exports: modules
