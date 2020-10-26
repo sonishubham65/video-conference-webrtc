@@ -241,7 +241,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.firebaseService.disconnect();
 
     //remove camera video Element
-    this.videoElement.nativeElement.querySelectorAll('video').forEach(ele => {
+    this.videoElement.nativeElement.querySelectorAll('div').forEach(ele => {
       ele.remove();
     })
 
