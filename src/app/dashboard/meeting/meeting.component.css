@@ -45,6 +45,7 @@
 }
 #screen #videos video {
   width: 100%;
+  object-fit: cover;
 }
 
 @media screen and (max-width: 360px) {
