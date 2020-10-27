@@ -1,42 +1,46 @@
 import { Injectable } from '@angular/core';
 const Config = {
   constraints: {
-    HD: {
-      video: { width: 553, height: 317 },
-      audio: true
-    },
-    Low: {
-      video: { width: 640, height: 480 },
-      audio: true,
-    }
+    video: { width: 553, height: 317 },
+    audio: false
   }
 }
 @Injectable({
   providedIn: 'root'
 })
 export class CameraService {
-  Stream;
-  isStarted;
-
-  constructor() { }
-  async start(type) {
-    this.Stream = await navigator.mediaDevices.getUserMedia(Config.constraints[type]);
-    this.isStarted = true;
+  track;
+  fakeTrack;
+  constructor() {
+    let width = Config['constraints']['video']['width'];
+    let height = Config['constraints']['video']['height'];
+    let canvas = Object.assign(document.createElement("canvas"), { width, height });
+    canvas.getContext('2d').fillRect(0, 0, width, height);
+    let stream = (canvas as any).captureStream();
+    this.fakeTrack = Object.assign(stream.getVideoTracks()[0], { enabled: false });
+  }
+  async start(video) {
+    try {
+      if (video) {
+        let stream = await navigator.mediaDevices.getUserMedia(Config.constraints);
+        this.track = stream.getVideoTracks()[0];
+      } else {
+        this.track = this.fakeTrack;
+      }
+    } catch (e) {
+      video = false
+      this.track = this.fakeTrack;
+    }
+    return video;
   }
   stop() {
-    this.Stream.getTracks().forEach(function (track) {
-      track.stop();
-    });
-    this.isStarted = false;
+    this.track.stop();
   }
   element(userid, stream?, volume?) {
     let div = document.createElement("div");
 
     let video = document.createElement("video");
-    if (!stream) {
-      video.volume = volume ? volume : 0;
-      stream = this.Stream;
-    }
+    video.volume = volume ? volume : 0;
     div.setAttribute("id", stream.id)
     div.setAttribute("data-userid", userid)
 

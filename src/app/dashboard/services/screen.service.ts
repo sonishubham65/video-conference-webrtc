@@ -11,17 +11,13 @@ const Config = {
   providedIn: 'root'
 })
 export class ScreenService {
-  Stream;
-  isStarted;
+  track;
   constructor() { }
   async start() {
-    this.Stream = await navigator.mediaDevices['getDisplayMedia'](Config.screen);
-    this.isStarted = true;
+    let stream = await navigator.mediaDevices['getDisplayMedia'](Config.screen);
+    this.track = stream.getVideoTrack()[0]
   }
   stop() {
-    this.isStarted = false;
-    this.Stream.getTracks().forEach(function (track) {
-      track.stop();
-    });
+    this.track.stop()
   }
 }

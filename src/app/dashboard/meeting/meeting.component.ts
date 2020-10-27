@@ -7,6 +7,7 @@ import { ScreenService } from '../services/screen.service';
 import { CameraService } from '../services/camera.service';
 import { FirebaseService } from '../services/firebase.service';
 import { RtcService } from '../services/rtc.service';
+import { AudioService } from '../services/audio.service';
 
 @Component({
   selector: 'app-meeting',
@@ -17,6 +18,7 @@ import { RtcService } from '../services/rtc.service';
 export class MeetingComponent implements OnInit, OnDestroy {
   roomid;
   shareurl;
+  remoteVideos = {};
   mic: boolean = false;
   video: boolean = false;
   constructor(
@@ -28,6 +30,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private cameraService: CameraService,
     public screenService: ScreenService,
+    public audioService: AudioService,
     private firebaseService: FirebaseService,
     private rtcService: RtcService) {
 
@@ -41,7 +44,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   hasJoined: boolean;
 
-  subscriptions = { offer: null, answer: null, candidate: null, user: null };;
+  subscriptions = { offer: null, answer: null, candidate: null, user: null };
+  stream;
   async ngOnInit() {
 
   }
@@ -49,19 +53,20 @@ export class MeetingComponent implements OnInit, OnDestroy {
     try {
       let now = await this.firebaseService.now();
       this.hasJoined = true;
-      await this.cameraService.start('HD');
 
-      this.cameraService.Stream.getTracks().forEach(track => {
-        if (track.kind == 'audio') {
-          track.enabled = this.mic;
-        }
-        if (track.kind == 'video') {
-          track.enabled = this.video;
-        }
-      });
+      this.video = await this.cameraService.start(this.video);
+      this.mic = await this.audioService.start(this.mic)
+
+      try {
+        console.log(this.cameraService.track, this.audioService.track)
+        this.stream = new MediaStream([this.cameraService.track, this.audioService.track])
+      } catch (e) {
+        console.log(e)
+      }
+
 
       //Create HTML
-      let element = this.cameraService.element(this.userService.user.uid);
+      let element = this.cameraService.element(this.userService.user.uid, this.stream);
       this.videoElement.nativeElement.appendChild(element);
 
 
@@ -82,10 +87,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
           let peerid = await this.rtcService.create(userid, 'camera');
 
           // Add tracks
-          let stream = (this.screenService.Stream || this.cameraService.Stream);
-          stream.getTracks().forEach(track => {
-            this.rtcService.addTrack(peerid, track, stream);
-          });
+          this.rtcService.addTrack(peerid, this.cameraService.track);
+          this.rtcService.addTrack(peerid, this.audioService.track);
 
 
           this.rtcService.onicecandidate(peerid).subscribe(event => {
@@ -101,7 +104,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
             peerid: peerid,
             userid: userid,
             offer: offer,
-            streamid: this.cameraService.Stream.id
+            //streamid: this.stream.id
           });
         }
       })
@@ -129,10 +132,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
 
         // Add track
-        let stream = (this.screenService.Stream || this.cameraService.Stream);
-        stream.getTracks().forEach(track => {
-          this.rtcService.addTrack(peerid, track, stream);
-        });
+        this.rtcService.addTrack(peerid, this.screenService.track || this.cameraService.track);
+        this.rtcService.addTrack(peerid, this.audioService.track);
 
 
 
@@ -147,7 +148,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
           peerid: peerid,
           userid: snapshot['from'],
           answer: answer,
-          streamid: this.cameraService.Stream.id
+          streamid: this.stream.id
         });
       })
 
@@ -208,20 +209,31 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   async Share() {
-    await this.screenService.start();
-    let videoTrack = this.screenService.Stream.getVideoTracks()[0];
-    Object.keys(this.rtcService.Peers).forEach(peerid => {
-      this.rtcService.replaceTrack(peerid, videoTrack)
-    });
-    videoTrack.onended = () => {
-      this.Stop_share()
+    try {
+      await this.screenService.start();
+      let videoTrack = this.stream.getVideoTracks()[0];
+
+      //this.stream = new MediaStream([videoTrack, this.stream.getAudioTracks()[0]])
+
+      Object.keys(this.rtcService.Peers).forEach(peerid => {
+        this.rtcService.replaceTrack(peerid, videoTrack)
+      });
+      videoTrack.onended = () => {
+        this.Stop_share()
+      }
+    } catch (e) {
+
     }
+
+
+
 
   }
 
   async Stop_share() {
     await this.screenService.stop();
-    let cameraTrack = this.cameraService.Stream.getVideoTracks()[0];
+    let cameraTrack = this.cameraService.track.getVideoTracks()[0];
+    this.stream = new MediaStream([cameraTrack, this.stream.getAudioTracks()[0]])
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, cameraTrack)
     });
@@ -246,13 +258,11 @@ export class MeetingComponent implements OnInit, OnDestroy {
     })
 
     //Stop camera stream
-    if (this.cameraService.isStarted)
-      this.cameraService.stop();
+    this.cameraService.stop();
 
 
     //Stop screen stream
-    if (this.screenService.isStarted)
-      this.screenService.stop();
+    this.screenService.stop();
 
     this.rtcService.close();
   }
@@ -314,14 +324,20 @@ export class MeetingComponent implements OnInit, OnDestroy {
       event.track.onmute = () => console.log("muted");
       event.track.onunmute = () => console.log("unmuted");
     }
-
-    let stream = event.streams[0];
-    console.log(stream.getTracks())
-    if (!document.getElementById(stream.id)) {
-      console.log("Inserted stream");
-      let element = this.cameraService.element(userid, stream, 1);
-      this.videoElement.nativeElement.appendChild(element);
+    console.log(this.remoteVideos[peerid], '======')
+    if (typeof this.remoteVideos[peerid] == 'undefined') {
+      this.remoteVideos[peerid] = {}
+      this.remoteVideos[peerid][event.track.kind] = event.track;
+    } else {
+      this.remoteVideos[peerid][event.track.kind] = event.track;
+      let stream = new MediaStream([this.remoteVideos[peerid].video, this.remoteVideos[peerid].audio]);
+      if (!document.getElementById(userid)) {
+        console.log("Inserted stream");
+        let element = this.cameraService.element(userid, stream, 1);
+        this.videoElement.nativeElement.appendChild(element);
+      }
     }
+
   }
   resize() {
     if (document.getElementById("videos")) {
@@ -335,40 +351,61 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
 
   }
-  micState(state) {
+  async micState(state) {
     this.mic = state;
+    let track;
     if (state) {
-      this.snackBar.open("Microphone on", "close", {
-        verticalPosition: 'top',
-        duration: 600
-      });
+      this.mic = await this.audioService.start(this.mic);
+      if (this.mic) {
+        track = this.audioService.track;
+        this.snackBar.open("Microphone on", "close", {
+          verticalPosition: 'top',
+          duration: 600
+        });
+      } else {
+        track = this.audioService.fakeTrack;
+      }
+
     } else {
+      track = this.audioService.fakeTrack;
+      this.audioService.stop();
       this.snackBar.open("Microphone off", "close", {
         verticalPosition: 'top',
         duration: 600
       });
     }
-    let audioTrack = this.cameraService.Stream.getAudioTracks()[0];
-    console.log(audioTrack)
-    audioTrack.enabled = state
+    console.log(track);
+    Object.keys(this.rtcService.Peers).forEach(peerid => {
+      this.rtcService.replaceTrack(peerid, track)
+    });
   }
 
-  videoState(state) {
+  async videoState(state) {
     this.video = state;
+    let track;
     if (state) {
-      this.snackBar.open("Videocam on", "close", {
-        verticalPosition: 'top',
-        duration: 600
-      });
+      this.video = await this.cameraService.start(this.video);
+      if (this.video) {
+        track = this.cameraService.track;
+        this.snackBar.open("Videocam on", "close", {
+          verticalPosition: 'top',
+          duration: 600
+        });
+      } else {
+        track = this.cameraService.fakeTrack;
+      }
     } else {
+      track = this.cameraService.fakeTrack;
+      this.cameraService.stop();
       this.snackBar.open("Videocam off", "close", {
         verticalPosition: 'top',
         duration: 600
       });
     }
-    let videoTrack = this.cameraService.Stream.getVideoTracks()[0];
-    console.log(videoTrack)
-    videoTrack.enabled = state
+    console.log(track);
+    Object.keys(this.rtcService.Peers).forEach(peerid => {
+      this.rtcService.replaceTrack(peerid, track)
+    });
   }
   copy_share_link() {
     this.shareurl;

@@ -126,27 +126,27 @@ export class FirebaseService {
 
   share = {
     offer: (_args) => {
-      const { roomid, peerid, userid, offer, streamid, created } = _args;
+      const { roomid, peerid, userid, offer, created } = _args;
       let set = {
         description: JSON.stringify(offer),
         from: this.userService.user.uid,
         to: userid,
         peerid: peerid,
-        streamid: streamid,
+        streamid: this.userService.user.uid,
         created: created,
       };
       console.log(`Create an offer for userid=${userid}`);
       firebase.firestore().collection("rooms").doc(roomid).collection(`offers-${userid}`).doc().set(set);
     },
     answer: (_args) => {
-      const { roomid, peerid, userid, answer, streamid, created } = _args;
+      const { roomid, peerid, userid, answer, created } = _args;
       let set = {
         created: created,
         description: JSON.stringify(answer),
         from: this.userService.user.uid,
         to: userid,
         peerid: peerid,
-        streamid: streamid,
+        streamid: this.userService.user.uid,
       };
       console.log(`Create an answer for userid=${userid}`);
       firebase.firestore().collection("rooms").doc(roomid).collection(`answers-${userid}`).doc().set(set);

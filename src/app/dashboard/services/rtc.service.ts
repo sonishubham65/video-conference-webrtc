@@ -80,9 +80,9 @@ export class RtcService {
    * @param peerid 
    * @description This function add a new track to RTCPeerConnection
    */
-  async addTrack(peerid, track, stream) {
+  async addTrack(peerid, track) {
     console.log(`Track is being added..`, track)
-    let trackid = await this.Peers[peerid].addTrack(track, stream);
+    let trackid = await this.Peers[peerid].addTrack(track);
     if (!this.Connections[peerid].tracks) {
       this.Connections[peerid].tracks = [];
     }
@@ -101,7 +101,9 @@ export class RtcService {
 
   async replaceTrack(peerid, track) {
     //console.log(this.Connections[peerid], peerid);
+    console.log(track)
     var sender = this.Connections[peerid].tracks.find(function (s) {
+      console.log(s)
       return s.track.kind == track.kind;
     });
     //console.log('found sender:', sender);
