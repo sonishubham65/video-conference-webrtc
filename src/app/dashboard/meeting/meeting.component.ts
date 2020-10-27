@@ -286,9 +286,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
     console.log(`Oniceconnectionstatechange triggered..`, event);
     if (event.currentTarget.iceConnectionState == 'disconnected') {
       console.log("Disconnected..", event);
-      this.resize();
       if (document.getElementById(streamid)) {
         document.getElementById(streamid).remove();
+        this.resize();
       } else {
         console.log("Not found");
       }
@@ -326,6 +326,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   resize() {
     if (document.getElementById("videos")) {
       let length = document.getElementById("videos").querySelectorAll('div').length
+      console.log(`resize length`, length)
       if (length > 2) {
         document.getElementById("videos").classList.add("resize")
       } else {
