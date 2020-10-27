@@ -375,7 +375,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       });
     }
     console.log(track);
-    document.getElementById(this.stream.id).querySelector('video').srcObject = new MediaStream([this.stream.getVideoTracks()[0], track]);
+    this.modify_video();
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, track)
     });
@@ -403,10 +403,25 @@ export class MeetingComponent implements OnInit, OnDestroy {
         duration: 600
       });
     }
-    document.getElementById(this.stream.id).querySelector('video').srcObject = new MediaStream([track, this.stream.getAudioTracks()[0]]);
+    this.modify_video();
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, track)
     });
+  }
+  modify_video() {
+    let AudioTrack;
+    let VideoTrack;
+    if (this.mic) {
+      AudioTrack = this.audioService.track;
+    } else {
+      AudioTrack = this.audioService.fakeTrack;
+    }
+    if (this.video) {
+      VideoTrack = this.cameraService.track;
+    } else {
+      VideoTrack = this.cameraService.fakeTrack;
+    }
+    document.getElementById(this.stream.id).querySelector('video').srcObject = new MediaStream([VideoTrack, AudioTrack]);
   }
   copy_share_link() {
     this.shareurl;

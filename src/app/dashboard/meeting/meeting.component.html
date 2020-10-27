@@ -1,5 +1,5 @@
-<div [hidden]="!screenService.isStarted" id="youarepresenting">
-  <p>You are presenting <button mat-raised-button color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted">
+<div [hidden]="!screenService.track" id="youarepresenting">
+  <p>You are presenting <button mat-raised-button color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.track">
     Stop
   </button></p>
 </div>
@@ -40,10 +40,10 @@
       <mat-icon>videocam</mat-icon>
     </button>
 
-    <button mat-fab color="primary" (click)="Share()" *ngIf="hasJoined && !screenService.isStarted"  matTooltip="Share your screen">
+    <button mat-fab color="primary" (click)="Share()" *ngIf="hasJoined && !screenService.track"  matTooltip="Share your screen">
       <mat-icon>screen_share</mat-icon>
     </button>
-    <button mat-fab color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.isStarted" matTooltip="Stop screen share">
+    <button mat-fab color="primary" (click)="Stop_share()" *ngIf="hasJoined && screenService.track" matTooltip="Stop screen share">
       <mat-icon>stop_screen_share</mat-icon>
     </button>
 
