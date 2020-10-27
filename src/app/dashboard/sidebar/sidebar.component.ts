@@ -6,7 +6,7 @@ import { UserService } from 'src/app/services/user.service';
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
-  host: { class: 'flex-shrink-1' }
+  host: { class: 'flex-shrink-1 sidebar-section' }
 })
 export class SidebarComponent implements OnInit {
 

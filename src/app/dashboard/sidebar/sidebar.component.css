@@ -1,7 +1,7 @@
 #sidebar {
   border-right: solid 1px #ccc;
   background: #35589b;
-  min-height: 680px;
+  min-height: calc(100vh - 71px);
   width: 170px;
 }
 

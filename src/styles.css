@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import "@angular/material/prebuilt-themes/deeppurple-amber.css";
 
 html,
 body {
@@ -11,6 +11,10 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.mat-progress-spinner.mat-progress-spinner-indeterminate-animation[mode=indeterminate] {
+.mat-progress-spinner.mat-progress-spinner-indeterminate-animation[mode="indeterminate"] {
   display: inline-block;
+}
+
+.sidebar-section {
+  background: #35589b;
 }
