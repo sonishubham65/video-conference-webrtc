@@ -46,15 +46,10 @@
 #screen #videos video {
   width: 100%;
   object-fit: cover;
-  max-height: 300px;
 }
-
-@media screen and (max-width: 360px) {
-  #screen #videos video {
-    width: 100%;
-  }
+#screen #videos.resize div {
+  width: 33.33%;
 }
-
 #screen .button_bar {
   position: absolute;
   bottom: 0;

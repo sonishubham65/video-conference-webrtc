@@ -286,12 +286,14 @@ export class MeetingComponent implements OnInit, OnDestroy {
     console.log(`Oniceconnectionstatechange triggered..`, event);
     if (event.currentTarget.iceConnectionState == 'disconnected') {
       console.log("Disconnected..", event);
+      this.resize();
       if (document.getElementById(streamid)) {
         document.getElementById(streamid).remove();
       } else {
         console.log("Not found");
       }
     } else if (event.currentTarget.iceConnectionState == 'connected') {
+      this.resize();
       console.log("Connected..")
     }
   }
@@ -308,7 +310,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
   ontrack(event, peerid, userid) {
     console.log(`ontrack triggered..`, event);
 
-
     if (event.track.kind == 'audio') {
       event.track.onmute = () => console.log("muted");
       event.track.onunmute = () => console.log("unmuted");
@@ -321,6 +322,17 @@ export class MeetingComponent implements OnInit, OnDestroy {
       let element = this.cameraService.element(userid, stream, 1);
       this.videoElement.nativeElement.appendChild(element);
     }
+  }
+  resize() {
+    if (document.getElementById("videos")) {
+      let length = document.getElementById("videos").querySelectorAll('div').length
+      if (length > 2) {
+        document.getElementById("videos").classList.add("resize")
+      } else {
+        document.getElementById("videos").classList.remove("resize")
+      }
+    }
+
   }
   micState(state) {
     this.mic = state;
