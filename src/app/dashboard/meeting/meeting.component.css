@@ -37,7 +37,7 @@
 #screen #videos div {
   margin: 0;
   width: 50%;
-  padding: 1px;
+  padding: 1px 4px;
   display: inline-block;
 }
 #screen #videos div:nth-child(even) {
