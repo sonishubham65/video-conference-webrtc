@@ -17,7 +17,7 @@ firebase.initializeApp(environment.firebase);
   declarations: [
     AppComponent,
     HeaderComponent,
-    HomeComponent
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

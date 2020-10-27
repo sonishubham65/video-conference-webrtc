@@ -1,0 +1,16 @@
+#sidebar {
+  border-right: solid 1px #ccc;
+  background: #35589b;
+  height: 100%;
+  width: 170px;
+  position: fixed;
+}
+
+#sidebar a.nav-link {
+  color: #fff;
+}
+#sidebar .mat-icon {
+  display: inline-block;
+  position: relative;
+  top: 5px;
+}

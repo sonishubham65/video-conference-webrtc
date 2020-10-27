@@ -1,0 +1,5 @@
+#inner_section {
+  padding: 15px;
+  width: calc(100% - 170px);
+  margin-left: 170px;
+}

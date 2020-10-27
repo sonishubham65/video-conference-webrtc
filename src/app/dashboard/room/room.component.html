@@ -1,25 +1,16 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-7">
-      <mat-list>
-        <mat-list-item>1.
-          <button [disabled]="roomid" mat-raised-button color="accent" class="clickhere" (click)="generateRoom()">
-            Click here
-            <mat-spinner [diameter]="16" *ngIf="Process.create"></mat-spinner>
-          </button>
-          to create a new room.
-        </mat-list-item>
-        <mat-divider></mat-divider>
-        <mat-list-item>2.
-          <button [disabled]="!roomid" [routerLink]="['/dashboard/meeting/',roomid]" mat-raised-button color="primary"
-            class="clickhere">
-            Join the Meeting
-          </button>
-        </mat-list-item>
-      </mat-list>
-    </div>
-    <div class="col-md-7">
-
-    </div>
-  </div>
-</div>
+  <mat-list>
+    <mat-list-item>1.
+      <button [disabled]="roomid" mat-raised-button color="accent" class="clickhere" (click)="generateRoom()">
+        Click here
+        <mat-spinner [diameter]="16" *ngIf="Process.create"></mat-spinner>
+      </button>
+      to create a new room.
+    </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item>2.
+      <button [disabled]="!roomid" [routerLink]="['/dashboard/meeting/',roomid]" mat-raised-button color="primary"
+        class="clickhere">
+        Join the Meeting
+      </button>
+    </mat-list-item>
+  </mat-list>

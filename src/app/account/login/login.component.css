@@ -1,5 +1,5 @@
 .signintext {
-  padding: 0 24px 0 24px
+  padding: 0 24px 0 24px;
 }
 
 .mat-form-field {
@@ -10,4 +10,8 @@
 .icon_back {
   font-size: 16px;
   cursor: pointer;
+}
+
+#login_section {
+  margin-top: 20px;
 }

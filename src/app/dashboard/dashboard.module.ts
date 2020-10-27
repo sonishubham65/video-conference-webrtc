@@ -7,10 +7,12 @@ import { FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { UserService } from '../services/user.service';
 import { MeetingComponent } from './meeting/meeting.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { DashboardComponent } from './dashboard.component';
 
 
 @NgModule({
-  declarations: [RoomComponent, MeetingComponent],
+  declarations: [RoomComponent, MeetingComponent, SidebarComponent, DashboardComponent],
   imports: [
     CommonModule,
     DashboardRoutingModule,

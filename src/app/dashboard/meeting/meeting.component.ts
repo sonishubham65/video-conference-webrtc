@@ -65,7 +65,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.videoElement.nativeElement.appendChild(element);
 
 
-
       // Join the room with roomid.
       this.firebaseService.join(this.roomid, now).then((data) => {
         this.snackBar.open("You have joined the meeting successfully.", "close", {
