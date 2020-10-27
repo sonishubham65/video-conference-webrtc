@@ -68,6 +68,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       // Join the room with roomid.
       this.firebaseService.join(this.roomid, now).then((data) => {
         this.snackBar.open("You have joined the meeting successfully.", "close", {
+          verticalPosition: 'top',
           duration: 600
         });
       });
@@ -323,6 +324,17 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
   micState(state) {
     this.mic = state;
+    if (state) {
+      this.snackBar.open("Microphone on", "close", {
+        verticalPosition: 'top',
+        duration: 600
+      });
+    } else {
+      this.snackBar.open("Microphone off", "close", {
+        verticalPosition: 'top',
+        duration: 600
+      });
+    }
     let audioTrack = this.cameraService.Stream.getAudioTracks()[0];
     console.log(audioTrack)
     audioTrack.enabled = state
@@ -330,6 +342,17 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   videoState(state) {
     this.video = state;
+    if (state) {
+      this.snackBar.open("Videocam on", "close", {
+        verticalPosition: 'top',
+        duration: 600
+      });
+    } else {
+      this.snackBar.open("Videocam off", "close", {
+        verticalPosition: 'top',
+        duration: 600
+      });
+    }
     let videoTrack = this.cameraService.Stream.getVideoTracks()[0];
     console.log(videoTrack)
     videoTrack.enabled = state
@@ -338,6 +361,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.shareurl;
     navigator.clipboard.writeText(this.shareurl).then(() => {
       this.snackBar.open("Share url has been copied in your clipboard", "close", {
+        verticalPosition: 'top',
         duration: 600
       });
     }, function (err) {
