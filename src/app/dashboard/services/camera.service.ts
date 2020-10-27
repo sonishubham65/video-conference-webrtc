@@ -16,7 +16,7 @@ export class CameraService {
     let height = Config['constraints']['video']['height'];
     let canvas = Object.assign(document.createElement("canvas"), { width, height });
     canvas.getContext('2d').fillRect(0, 0, width, height);
-    let stream = (canvas as any).captureStream();
+    let stream = (canvas as any).captureStream(25);
     this.fakeTrack = Object.assign(stream.getVideoTracks()[0], { enabled: false });
   }
   async start(video) {

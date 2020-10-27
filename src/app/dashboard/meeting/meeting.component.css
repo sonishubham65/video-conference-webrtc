@@ -38,6 +38,7 @@
   margin: 0;
   width: 50%;
   padding: 1px 4px;
+  border: solid 1px #ccc;
   display: inline-block;
 }
 #screen #videos div:nth-child(even) {
@@ -46,6 +47,8 @@
 #screen #videos video {
   width: 100%;
   object-fit: cover;
+  margin-top: 4px;
+  background: #000;
 }
 #screen #videos.resize div {
   width: 33.33%;

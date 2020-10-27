@@ -375,6 +375,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       });
     }
     console.log(track);
+    document.getElementById(this.stream.id).querySelector('video').srcObject = new MediaStream([this.stream.getVideoTracks()[0], track]);
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, track)
     });
@@ -402,7 +403,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
         duration: 600
       });
     }
-    console.log(track);
+    document.getElementById(this.stream.id).querySelector('video').srcObject = new MediaStream([track, this.stream.getAudioTracks()[0]]);
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, track)
     });
