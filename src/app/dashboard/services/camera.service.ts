@@ -11,6 +11,7 @@ const Config = {
 export class CameraService {
   track;
   fakeTrack;
+  stream;
   constructor() {
     let width = Config['constraints']['video']['width'];
     let height = Config['constraints']['video']['height'];
@@ -22,8 +23,8 @@ export class CameraService {
   async start(video) {
     try {
       if (video) {
-        let stream = await navigator.mediaDevices.getUserMedia(Config.constraints);
-        this.track = stream.getVideoTracks()[0];
+        this.stream = await navigator.mediaDevices.getUserMedia(Config.constraints);
+        this.track = this.stream.getVideoTracks()[0];
       } else {
         this.track = this.fakeTrack;
       }
@@ -34,7 +35,9 @@ export class CameraService {
     return video;
   }
   stop() {
-    this.track.stop();
+    this.stream.getTracks().forEach(track => {
+      track.stop()
+    });
   }
   element(userid, stream?, volume?) {
     let div = document.createElement("div");

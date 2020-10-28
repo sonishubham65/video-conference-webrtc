@@ -72,3 +72,7 @@
 #screen .mat-raised-button.mat-primary {
   background-color: #426ec2;
 }
+
+.hidden {
+  display: none !important;
+}

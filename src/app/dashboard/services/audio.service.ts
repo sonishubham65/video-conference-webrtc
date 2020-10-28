@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 })
 export class AudioService {
   track;
+  stream;
   fakeTrack;
   constructor() {
     let ctx = new AudioContext();
@@ -17,11 +18,11 @@ export class AudioService {
   async start(mic) {
     try {
       if (mic) {
-        let stream = await navigator.mediaDevices.getUserMedia({
+        this.stream = await navigator.mediaDevices.getUserMedia({
           video: false,
           audio: true
         });
-        this.track = stream.getAudioTracks()[0]
+        this.track = this.stream.getAudioTracks()[0]
       } else {
         this.track = this.fakeTrack;
       }
@@ -32,7 +33,13 @@ export class AudioService {
     return mic;
   }
   stop() {
-    this.track.stop();
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => {
+        console.log(track)
+        track.stop()
+      });
+    }
+
   }
   element(stream?, volume?) {
     let audio = document.createElement("audio");

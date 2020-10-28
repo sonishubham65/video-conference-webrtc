@@ -12,12 +12,16 @@ const Config = {
 })
 export class ScreenService {
   track;
+  stream;
   constructor() { }
   async start() {
-    let stream = await navigator.mediaDevices['getDisplayMedia'](Config.screen);
-    this.track = stream.getVideoTrack()[0]
+    this.stream = await navigator.mediaDevices['getDisplayMedia'](Config.screen);
+    this.track = this.stream.getTracks()[0]
   }
   stop() {
-    this.track.stop()
+    if (this.track) {
+      this.track.stop()
+      this.track = undefined
+    }
   }
 }

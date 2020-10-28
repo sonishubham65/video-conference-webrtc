@@ -43,6 +43,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   @ViewChild('videos', { static: false }) videoElement: any;
 
   hasJoined: boolean;
+  hasJoinedDisabled: boolean = false;
 
   subscriptions = { offer: null, answer: null, candidate: null, user: null };
   stream;
@@ -53,15 +54,15 @@ export class MeetingComponent implements OnInit, OnDestroy {
     try {
       let now = await this.firebaseService.now();
       this.hasJoined = true;
+      this.hasJoinedDisabled = true;
 
       this.video = await this.cameraService.start(this.video);
       this.mic = await this.audioService.start(this.mic)
 
       try {
-        console.log(this.cameraService.track, this.audioService.track)
-        this.stream = new MediaStream([this.cameraService.track, this.audioService.track])
+        this.stream = new MediaStream([this.screenService.track || this.cameraService.track, this.audioService.track])
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
 
 
@@ -78,6 +79,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
         });
       });
 
+      this.hasJoinedDisabled = false;
+
       this.subscriptions.user = this.firebaseService.user(this.roomid, now).subscribe(async snapshot => {
         // Create a new Peer for respective Stream
 
@@ -87,7 +90,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
           let peerid = await this.rtcService.create(userid, 'camera');
 
           // Add tracks
-          this.rtcService.addTrack(peerid, this.cameraService.track);
+          this.rtcService.addTrack(peerid, this.screenService.track || this.cameraService.track);
           this.rtcService.addTrack(peerid, this.audioService.track);
 
 
@@ -211,7 +214,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
   async Share() {
     try {
       await this.screenService.start();
-      let videoTrack = this.stream.getVideoTracks()[0];
+      document.getElementById("videos").querySelector(`[data-userid="${this.userService.user.uid}"]`).classList.add('hidden')
+      let videoTrack = this.screenService.track
 
       //this.stream = new MediaStream([videoTrack, this.stream.getAudioTracks()[0]])
 
@@ -222,26 +226,31 @@ export class MeetingComponent implements OnInit, OnDestroy {
         this.Stop_share()
       }
     } catch (e) {
-
+      console.log(e)
     }
-
-
-
-
   }
 
-  async Stop_share() {
+  async Stop_share(option?) {
     await this.screenService.stop();
-    let cameraTrack = this.cameraService.track.getVideoTracks()[0];
-    this.stream = new MediaStream([cameraTrack, this.stream.getAudioTracks()[0]])
-    Object.keys(this.rtcService.Peers).forEach(peerid => {
-      this.rtcService.replaceTrack(peerid, cameraTrack)
-    });
+    document.getElementById("videos").querySelector(`[data-userid="${this.userService.user.uid}"]`).classList.remove('hidden')
+    if (!option) {
+      let videoTrack = this.cameraService.track || this.cameraService.fakeTrack;
+      this.modify_video();
+      Object.keys(this.rtcService.Peers).forEach(peerid => {
+        this.rtcService.replaceTrack(peerid, videoTrack)
+      });
+    }
   }
 
   async Stop() {
     console.log('Stop calling');
     this.hasJoined = false;
+    this.hasJoinedDisabled = true;
+
+    //Stop audio, camera, screen stream
+    this.cameraService.stop();
+    this.audioService.stop();
+    this.screenService.stop();
 
     //unsubscribe all the subscription for offer, answer and candidate.
     Object.keys(this.subscriptions).forEach(key => {
@@ -257,14 +266,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
       ele.remove();
     })
 
-    //Stop camera stream
-    this.cameraService.stop();
-
-
-    //Stop screen stream
-    this.screenService.stop();
-
     this.rtcService.close();
+
+    this.hasJoinedDisabled = false;
   }
 
   async ngOnDestroy() {
@@ -374,7 +378,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
         duration: 600
       });
     }
-    console.log(track);
     this.modify_video();
     Object.keys(this.rtcService.Peers).forEach(peerid => {
       this.rtcService.replaceTrack(peerid, track)
@@ -385,6 +388,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.video = state;
     let track;
     if (state) {
+      await this.Stop_share(true);
       this.video = await this.cameraService.start(this.video);
       if (this.video) {
         track = this.cameraService.track;
@@ -408,11 +412,16 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.rtcService.replaceTrack(peerid, track)
     });
   }
-  modify_video() {
+  async modify_video() {
     let AudioTrack;
     let VideoTrack;
     if (this.mic) {
-      AudioTrack = this.audioService.track;
+      this.video = await this.cameraService.start(this.video);
+      if (this.video) {
+        AudioTrack = this.audioService.track;
+      } else {
+        AudioTrack = this.audioService.fakeTrack;
+      }
     } else {
       AudioTrack = this.audioService.fakeTrack;
     }

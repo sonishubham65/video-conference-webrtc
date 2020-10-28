@@ -19,7 +19,7 @@
     <button mat-fab color="primary" (click)="copy_share_link()" matTooltip="Share meeting url with other">
       <mat-icon>share</mat-icon>
     </button>
-    <button mat-fab color="primary" (click)="Join()" *ngIf="!hasJoined" matTooltip="Start the call">
+    <button mat-fab color="primary" [disabled]="hasJoinedDisabled" (click)="Join()" *ngIf="!hasJoined" matTooltip="Start the call">
       <mat-icon>phone</mat-icon>
     </button>
 
@@ -47,7 +47,7 @@
       <mat-icon>stop_screen_share</mat-icon>
     </button>
 
-    <button mat-fab color="primary" (click)="Stop()" *ngIf="hasJoined" matTooltip="Stop the call">
+    <button mat-fab color="primary" [disabled]="hasJoinedDisabled" (click)="Stop()" *ngIf="hasJoined" matTooltip="Stop the call">
       <mat-icon>phone_disabled</mat-icon>
     </button>
   </div>
